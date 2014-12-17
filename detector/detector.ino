@@ -7,20 +7,21 @@ const byte Screen[] PROGMEM = {88,48,0x0,0x3E,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x
 
 
 int input, prevInput, inputVar;
-float angle,angleCible, angleInst;
+float angle,angleCible;
 unsigned int cptFrame;
 void setup(){
   gb.begin();
   gb.titleScreen(F("Ghost detector"));
   gb.setFrameRate(100);
 }
-
+bool mode = true;
 void loop(){
   if(gb.update()){
      
     if (gb.buttons.pressed(BTN_C)){
       gb.titleScreen(F("Ghost detector"));
     }
+
     
     input = gb.backlight.ambientLight;
     inputVar = (prevInput - input)*10;
@@ -28,17 +29,20 @@ void loop(){
     //gb.display.fillRect(0,40,constrain(abs(inputVar), 0, 84), 8);
     gb.display.drawBitmap(0,0,Screen);
     
-    angleCible = max((angleCible*0.9), ((constrain(abs(inputVar), 0, 220)/100) -1.2F));
+    angleCible = max((angleCible*0.9), ((min(abs(inputVar), 240)/100) ));
     
+      drawBitmapAngle(43,58,Aiguille,angle-1.2);
+
     
-    drawBitmapAngle(43,58,Aiguille,angle);
     if(angle > 0)
       gb.sound.playTick();
     
-    angle = max(angleCible, angle +(angleCible*0,2)); 
+    angle =  ((angle<angleCible )? angle +(angleCible*0.2) : angle -(angleCible*0.2) ); 
     
    //maxValue = max(inputVar, maxValue);
-      gb.display.print(angle);
+      /*gb.display.println(angle);
+      gb.display.println(angleCible);
+      gb.display.println(inputVar);*/
   }
 }
 
